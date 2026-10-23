@@ -323,12 +323,12 @@ export const scenarios = [
       const shown = (text) => `document.getElementById("root").innerText.indexOf(${JSON.stringify(text)}) >= 0`;
       await page.post({ kind: "act", act: "action", arg: "learn" });
       check("Ajuda → Aprender Hive abre a página do curso, com o tour oficial",
-        await page.waitFor(`${shown("Learn Hive")} && ${shown("hive-lang.run")}`));
+        await page.waitFor(`${shown("Um curso prático")} && ${shown("hive-lang.run")}`));
       await page.post({ kind: "act", act: "learn", arg: "01-hello/01-greeting" });
       check("o desafio abre com o código inicial no editor", await page.waitFor(`${value}.indexOf("func greet(name: Str): Str") >= 0`));
-      // `return ""` vira `return "Hello, {nome}!"`: `nome` não existe.
+      // `return ""` vira `return "Olá, {nome}!"`: `nome` não existe.
       await page.eval(`(function(){var t=${editor};t.focus();var at=t.value.indexOf('return ""')+7;t.setSelectionRange(at,at+2);})()`);
-      await page.insertText('"Hello, {nome}!"');
+      await page.insertText('"Olá, {nome}!"');
       check("o que se digita chega ao programa", await page.waitFor(`${value}.indexOf('{nome}') >= 0`));
       check("o erro de compilação aparece na linha enquanto se digita",
         await page.waitFor(`[].slice.call(${runs}.querySelectorAll(".h-note")).some(function(s){return (s.getAttribute("data-note")||"").indexOf("nome")>=0})`, 30000));
