@@ -1037,7 +1037,7 @@ test "Aprender Hive abre na página do curso, anda pelos passos e guarda o códi
 
 	overview := support.ask(db, support.event("act", "action", "learn", "", 0))
 	assert overview.learnStep == ""
-	assert indexOf(overview.page, "Learn Hive") is Result.Ok(_)
+	assert indexOf(overview.page, "Um curso prático") is Result.Ok(_)
 	assert indexOf(overview.page, "APRENDER HIVE") is Result.Ok(_)
 	assert indexOf(overview.page, "Tour oficial em hive-lang.run") is Result.Ok(_)
 	assert indexOf(overview.page, "Começar") is Result.Ok(_)
@@ -1049,12 +1049,12 @@ test "Aprender Hive abre na página do curso, anda pelos passos e guarda o códi
 	assert greeting.focus == "learnEditor"
 	assert indexOf(greeting.page, "Desafio 1 de 2") is Result.Ok(_)
 	assert indexOf(greeting.page, "▶ Run tests") is Result.Ok(_)
-	assert indexOf(greeting.page, "interpolated string") is Result.Error(_)
+	assert indexOf(greeting.page, "Monte a resposta") is Result.Error(_)
 	assert indexOf(greeting.page, "Aprender Hive — Hive Studio") is Result.Ok(_)
 
 	// A dica e a solução, a pedido.
 	hinted := support.ask(db, support.event("act", "learnHint", "", "", 0))
-	assert indexOf(hinted.page, "interpolated string") is Result.Ok(_)
+	assert indexOf(hinted.page, "Monte a resposta") is Result.Ok(_)
 	answered := support.ask(db, support.event("act", "learnSolution", "", "", 0))
 	assert indexOf(answered.page, "Uma solução possível") is Result.Ok(_)
 
@@ -1068,7 +1068,7 @@ test "Aprender Hive abre na página do curso, anda pelos passos e guarda o códi
 	badge := support.ask(db, support.event("act", "learn", "01-hello/02-badge", "", 0))
 	assert indexOf(badge.learnCode, "func badge(") is Result.Ok(_)
 	assert badge.learnSerial > greeting.learnSerial
-	assert indexOf(badge.page, "interpolated string") is Result.Error(_)
+	assert indexOf(badge.page, "Monte a resposta") is Result.Error(_)
 	back := support.ask(db, support.event("act", "learn", "01-hello/01-greeting", "", 0))
 	assert back.learnCode == edited.learnCode
 	reset := support.ask(db, support.event("act", "learnReset", "", "", 0))
@@ -1079,7 +1079,8 @@ test "Aprender Hive abre na página do curso, anda pelos passos e guarda o códi
 	closed := support.ask(db, support.event("act", "action", "closeTab", "", 0))
 	assert indexOf(closed.page, "Desafio 1 de 2") is Result.Error(_)
 	assert indexOf(support.readOr(root + "/progress.txt"), "at 01-hello/01-greeting") is Result.Ok(_)
-	assert support.readOr(root + "/drafts/01-hello/01-greeting.hive") == greeting.learnCode
+	// O código voltou ao do curso: não fica rascunho, e o passo segue o curso.
+	assert hive.file.read(root + "/drafts/01-hello/01-greeting.hive") is Result.Error(_)
 	reopened := support.ask(db, support.event("act", "side", "learn", "", 0))
 	assert reopened.learnStep == "01-hello/01-greeting"
 }
